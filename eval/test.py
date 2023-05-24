@@ -25,7 +25,7 @@ import random
 
 ################# python input parameters #######################
 parser = argparse.ArgumentParser()
-parser.add_argument('-model', type=str, default='gru_beta', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
+parser.add_argument('-model', type=str, default='gru', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
 parser.add_argument('-version', type=int, default=2, help='train version')
 parser.add_argument('-instep', type=int, default=1, help='input step')
 parser.add_argument('-outstep', type=int, default=1, help='predict step')
@@ -57,6 +57,8 @@ def getModel(name, device):
     loader.exec_module(baseline_py_file)
     ########## select the baseline model ##########
     if args.model == 'gru_beta':
+        model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device)
+    if args.model == 'gru': #gru_beta
         model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device)
     if args.model == 'lstnet':
         model = baseline_py_file.LSTNet(data_m=N_NODE * CHANNEL, window=TIMESTEP_IN, hidRNN=64, hidCNN=64, CNN_kernel=3,
@@ -115,23 +117,24 @@ def predictModel(model, data_iter):
         YS_truth = np.vstack(YS_truth)
     return YS_truth, YS_pred  # [B,T,N,C]
 
-path = r'C:\Users\86136\PycharmProjects\pythonProject\GRU_regression_gas sensor\save\sensor2_gru_beta_in1_out1_lr0.001_lossMSE_hc8_train0.8_test40,60_version2'
+path = '../save/sensor4_gru_in1_out1_lr0.001_lossMSE_hc8_train0.8_test10_version10'
 model = getModel(MODELNAME, device)
 # model = baseline_py_file.GRU(in_dim=TIMESTEP_IN, out_dim=TIMESTEP_OUT, hidden_layer=args.hc, device=device).to(device)
 model.eval()
-mode = model.load_state_dict(torch.load(path + '/' + 'gru_beta' + '.pt',map_location=device))  ## 模型的cuda 要和本地的显卡匹配起来
+model.load_state_dict(torch.load(path + '/' + 'gru' + '.pt',map_location=device))  ## 模型的cuda 要和本地的显卡匹配起来
 # map_location=torch.device('cpu')
 print(type(model))
-# result = []
-# data_path = r'C:\Users\86136\PycharmProjects\pythonProject\AI -learn from zero\data\model_test\test60.csv'
-# data_test = pd.read_csv(data_path,header=None)
-# data = np.array(data_test)
-# tor_data = torch.Tensor(data).unsqueeze(-1)
-# tt_data = tor_data.unsqueeze(-1).to(device)
-# print(tt_data)
-# y = mode(tt_data)
-# print(y)
-# print(type(y))
+result = []
+data_path = '../data/test data/s4test40.csv'
+data_test = pd.read_csv(data_path,header=None,index_col=None)
+data = np.array(data_test)
+tor_data = torch.Tensor(data).unsqueeze(-1)
+tt_data = tor_data.unsqueeze(-1).to(device)
+print(tt_data)
+y = model(tt_data)
+print(y)
+np.savetxt('sensor4_reg.csv',y.cpu().detach().numpy().reshape(-1,1),fmt='%.2f',delimiter=',')
+# np.save(y.cpu.detach.numpy())
 # for i in range(len(data_test)):
 #     data = np.array(data_test)[i]
 #     print(data)

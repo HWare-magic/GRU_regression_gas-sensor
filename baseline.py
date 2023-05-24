@@ -39,7 +39,7 @@ def count_parameters(model):
 ################# python input parameters #######################
 parser = argparse.ArgumentParser()
 parser.add_argument('-model', type=str, default='gru_beta', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
-parser.add_argument('-version', type=int, default=2, help='train version')
+parser.add_argument('-version', type=int, default=10, help='train version')
 parser.add_argument('-instep', type=int, default=1, help='input step')
 parser.add_argument('-outstep', type=int, default=1, help='predict step')
 parser.add_argument('-sca', type=int, default=0, help='predict step')
@@ -50,7 +50,7 @@ parser.add_argument('-mode', type=str, default='train', help='train, debug or ev
 parser.add_argument('-data', type=str, default='4',
                     help='choose which ')
 parser.add_argument('-train', type=float, default=0.8, help='train data: 0.8,0.7,0.6,0.5')
-parser.add_argument('-test', type=str, default='30,70,50', help='choose which label to be test dataset')  ## 60 作为预测的类型
+parser.add_argument('-test', type=str, default='10', help='choose which label to be test dataset')  ## 60 作为预测的类型
 # parser.add_argument('-test', type=list, default=[40], help='choose which label to be test dataset')
 parser.add_argument('-scaler', type=str, default='zscore', help='data scaler process type, zscore or minmax') ## 归一化
 parser.add_argument('-snorm', type=int, default=1)  # STNorm Hyper Param 
@@ -62,7 +62,7 @@ device = torch.device("cuda:{}".format(args.cuda)) if torch.cuda.is_available() 
 ################# data selection #######################
 if args.data == '4': ## 读了sensor1的数据
     DATAPATH = './data/with_rate/sensor' + args.data + '_rate'+'.csv'  #
-    data = pd.read_csv(DATAPATH,index_col=0)
+    data = pd.read_csv(DATAPATH,index_col=0,header=0)
     DATANAME = 'sensor' + args.data
 
 ################# Global Parameters setting #######################   
@@ -87,7 +87,7 @@ CHANNEL = int(common_config['CHANNEL'])  # 1
 LEARNING_RATE = 0.001
 # PATIENCE = int(common_config['PATIENCE'])   # 10
 PRINT_EPOCH = 1
-PATIENCE = 100  ## 耐心值 是啥
+PATIENCE = 200  ## 耐心值 是啥
 OPTIMIZER = 'Adam'#str(common_config['OPTIMIZER'])  # Adam
 LOSS = 'MSE'# str(common_config['LOSS'])  # MAE
 # TRAIN = float(common_config['TRAIN']) # 0.8
@@ -176,8 +176,10 @@ def getModel(name, device):
     if args.model == 'biGRU':
         model = baseline_py_file.GRUModel(input_dim=1, hidden_dim=args.hc, output_dim=1,num_layers=4,
                           dropout=0.1,device=device).to(device)
+    if args.model == 'gru': #gru_beta
+        model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device) ## hidden_layer = dim
     if args.model == 'gru_beta': #gru_beta
-        model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=5,device=device).to(device) ## hidden_layer = dim
+        model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device)
     if args.model == 'lstnet':
         model = baseline_py_file.LSTNet(data_m=N_NODE * CHANNEL, window=TIMESTEP_IN, hidRNN=64, hidCNN=64, CNN_kernel=3,
                                         skip=3, highway_window=TIMESTEP_IN).to(device)
@@ -300,10 +302,10 @@ def trainModel(name, device, data, x_stats, if_stats=False, if_scaler =False):  
             print("|%01d    Horizon | MAPE: %.6f, %.6f; MAE: %.6f, %.6f; RMSE: %.6f, %.6f;" % (
             TIMESTEP_OUT, val_mape, test_mape, val_mae, test_mae, val_rmse, test_rmse))
 
-            if np.mean(test_rmse) < min_test_loss:
+            if np.mean(val_rmse) < min_test_loss:
                 best_epoch = epoch
                 wait = 0
-                min_test_loss = np.mean(test_rmse)
+                min_test_loss = np.mean(val_rmse)
                 torch.save(model.state_dict(), single_version_PATH + '/' + name + '.pt')  ## 这里是保存 模型 看下怎么改个格式  或者 怎么直接用起来
             else:
                 wait += 1

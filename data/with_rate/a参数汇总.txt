@@ -1,4 +1,0 @@
-sensor1  = 0.5
-sensor2 = 0.338
-sensor3 =0.468
-sensor4 = 0.395

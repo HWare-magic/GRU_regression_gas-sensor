@@ -1,3 +1,11 @@
+###  train model is fix random seed seed_torch(213984798)
+###  two train model change  use "parser.add_argument('-model', type=str, default='gru', help='choose which model to train and test')"
+###  gru  and  gru_beta
+###  dataset change by  parser.add_argument('-data', type=str, default='4',
+####                    help='choose which ')   1 to 4  means sensor1 to 4
+
+
+
 import sys
 import pynvml
 import os
@@ -38,8 +46,8 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 ################# python input parameters #######################
 parser = argparse.ArgumentParser()
-parser.add_argument('-model', type=str, default='gru_beta', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
-parser.add_argument('-version', type=int, default=10, help='train version')
+parser.add_argument('-model', type=str, default='gru', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
+parser.add_argument('-version', type=int, default=12, help='train version')
 parser.add_argument('-instep', type=int, default=1, help='input step')
 parser.add_argument('-outstep', type=int, default=1, help='predict step')
 parser.add_argument('-sca', type=int, default=0, help='predict step')
@@ -61,7 +69,7 @@ args = parser.parse_args()  # python  args.参数名:可以获取传入的参数
 device = torch.device("cuda:{}".format(args.cuda)) if torch.cuda.is_available() else torch.device("cpu")
 ################# data selection #######################
 if args.data == '4': ## 读了sensor1的数据
-    DATAPATH = './data/with_rate/sensor' + args.data + '_rate'+'.csv'  #
+    DATAPATH = './data/train_dataset_with_rate/sensor' + args.data + '_rate'+'.csv'  #
     data = pd.read_csv(DATAPATH,index_col=0,header=0)
     DATANAME = 'sensor' + args.data
 

@@ -117,7 +117,7 @@ def predictModel(model, data_iter):
         YS_truth = np.vstack(YS_truth)
     return YS_truth, YS_pred  # [B,T,N,C]
 
-path = '../save/sensor4_gru_in1_out1_lr0.001_lossMSE_hc8_train0.8_test10_version10'
+path = '../save/history/sensor4_gru_in1_out1_lr0.001_lossMSE_hc8_train0.8_test10_version10'
 model = getModel(MODELNAME, device)
 # model = baseline_py_file.GRU(in_dim=TIMESTEP_IN, out_dim=TIMESTEP_OUT, hidden_layer=args.hc, device=device).to(device)
 model.eval()

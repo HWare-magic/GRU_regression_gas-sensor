@@ -24,7 +24,7 @@ class GRU(nn.Module):
 
 
     def forward(self, x):
-        x_r = x[:,-1,:,:] ## 70 为 timestep_in
+        x_r = x[:,-1,:,:] ## 70 为 timestep_in   ！！！！ for beta model  xr means beta parameter
         # print(x_r.shape)
         # print(x_r)
         x = x[:,0:70,:,:]
@@ -44,7 +44,7 @@ class GRU(nn.Module):
         out = self.fc1(output.permute(0,2,1)) # torch.Size([32, 8, 1])
         # print('fc1 shape is ', out.shape)
         out = self.fc2(out.permute(0,2,1))  #torch.Size([32, 1, 1])
-        out = out - (5 * x_r) # new ver 10  old ver 5  sensor1 = 10  sensor2 =7.5  sensor3 = 2.2 sensor4 = 2.5
+        out = out - (5 * x_r) #   here constant is a   hyperparameters      xr is beta       #new ver 10  old ver 5  sensor1 = 10  sensor2 =7.5  sensor3 = 2.2 sensor4 = 2.5
         # print('out is : ',out.shape)
         # out = torch.cat((out,x_r),1)
         # out = self.fc3(out.permute(0,2,1))

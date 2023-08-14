@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7b4c8f5f-eb75-44e7-9a6b-68c39c8f1d4d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/eval/sensor1_reg.csv" beforeDir="false" afterPath="$PROJECT_DIR$/eval/sensor1_reg.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eval/sensor1_reg_beta.csv" beforeDir="false" afterPath="$PROJECT_DIR$/eval/sensor1_reg_beta.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eval/sensor2_reg_beta.csv" beforeDir="false" afterPath="$PROJECT_DIR$/eval/sensor2_reg_beta.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eval/sensor3_reg_beta.csv" beforeDir="false" afterPath="$PROJECT_DIR$/eval/sensor3_reg_beta.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/GRU_regression_gas sensor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/GRU_regression_gas sensor.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/gru_beta.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/gru_beta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,13 +26,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/86136/PycharmProjects/pythonProject/GRU_regression_gas sensor"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/86136/PycharmProjects/pythonProject/GRU_regression_gas sensor&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

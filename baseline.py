@@ -46,19 +46,19 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 ################# python input parameters #######################
 parser = argparse.ArgumentParser()
-parser.add_argument('-model', type=str, default='gru', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
-parser.add_argument('-version', type=int, default=12, help='train version')
+parser.add_argument('-model', type=str, default='gru_beta', help='choose which model to train and test')  ## 这里默认使用的模型是GRU
+parser.add_argument('-version', type=int, default=10, help='train version')
 parser.add_argument('-instep', type=int, default=1, help='input step')
 parser.add_argument('-outstep', type=int, default=1, help='predict step')
 parser.add_argument('-sca', type=int, default=0, help='predict step')
 parser.add_argument('-hc', type=int, default=8, help='hidden channel')
 parser.add_argument('-batch', type=int, default=32, help='batch size')  ## batch size 32
-parser.add_argument('-epoch', type=int, default=200, help='training epochs')
+parser.add_argument('-epoch', type=int, default=500, help='training epochs')
 parser.add_argument('-mode', type=str, default='train', help='train, debug or eval')  ## mode 有三种模式 训练 debug 和 评估
 parser.add_argument('-data', type=str, default='4',
                     help='choose which ')
 parser.add_argument('-train', type=float, default=0.8, help='train data: 0.8,0.7,0.6,0.5')
-parser.add_argument('-test', type=str, default='10', help='choose which label to be test dataset')  ## 60 作为预测的类型
+parser.add_argument('-test', type=str, default='40,60', help='choose which label to be test dataset')  ## 60 作为预测的类型
 # parser.add_argument('-test', type=list, default=[40], help='choose which label to be test dataset')
 parser.add_argument('-scaler', type=str, default='zscore', help='data scaler process type, zscore or minmax') ## 归一化
 parser.add_argument('-snorm', type=int, default=1)  # STNorm Hyper Param 
@@ -95,7 +95,7 @@ CHANNEL = int(common_config['CHANNEL'])  # 1
 LEARNING_RATE = 0.001
 # PATIENCE = int(common_config['PATIENCE'])   # 10
 PRINT_EPOCH = 1
-PATIENCE = 200  ## 耐心值 是啥
+PATIENCE = 50  ## 早停机制
 OPTIMIZER = 'Adam'#str(common_config['OPTIMIZER'])  # Adam
 LOSS = 'MSE'# str(common_config['LOSS'])  # MAE
 # TRAIN = float(common_config['TRAIN']) # 0.8
@@ -106,7 +106,7 @@ TEST=args.test
 # torch.manual_seed(100)
 # torch.cuda.manual_seed(100)
 # np.random.seed(77)  # for reproducibility
-seed_torch(213984798)
+# seed_torch(213984798)
 torch.backends.cudnn.benchmark = False
 ################# System Parameter Setting #######################
 PATH = "./save/{}_{}_in{}_out{}_lr{}_loss{}_hc{}_train{}_test{}_version".format(DATANAME, args.model, args.instep,
@@ -186,6 +186,8 @@ def getModel(name, device):
                           dropout=0.1,device=device).to(device)
     if args.model == 'gru': #gru_beta
         model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device) ## hidden_layer = dim
+    if args.model == 'gru+': #gru_beta
+        model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=71,timestep_out=1,num_layers=4,device=device).to(device)
     if args.model == 'gru_beta': #gru_beta
         model = baseline_py_file.GRU(in_dim=1, out_dim=1, hidden_layer=args.hc, timestep_in=70,timestep_out=1,num_layers=4,device=device).to(device)
     if args.model == 'lstnet':
@@ -283,6 +285,14 @@ def trainModel(name, device, data, x_stats, if_stats=False, if_scaler =False):  
     if OPTIMIZER == 'RMSprop':
         optimizer = torch.optim.RMSprop(model.parameters(), lr=LEARNING_RATE)
     elif OPTIMIZER == 'Adam':
+#         exclude_param = model.bweight1
+#         params_without_exclude = (p for p in model.parameters() if p is not exclude_param)
+#         params_only_exclude = (p for p in model.parameters() if p is exclude_param)
+#
+#         optimizer = torch.optim.Adam([
+#     {'params': params_only_exclude, 'lr': 0.005},
+#     {'params': params_without_exclude, 'lr': 0.001}
+# ])
         optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     for epoch in range(EPOCH):  # EPOCH
         starttime = datetime.now()
@@ -329,7 +339,7 @@ def trainModel(name, device, data, x_stats, if_stats=False, if_scaler =False):  
             "epoch", epoch, "time used", epoch_time, "seconds", "train loss", train_loss, "validation rmse:",
             np.mean(val_rmse), "test rmse:", np.mean(test_rmse)))
 
-    model.load_state_dict(torch.load(single_version_PATH + '/' + name + '.pt'))
+    #model.load_state_dict(torch.load(single_version_PATH + '/' + name + '.pt'))
     val_mse, val_rmse, val_mae, val_mape, test_mse, test_rmse, test_mae, test_mape = model_inference(model, val_iter,
                                                                                                      test_iter, x_stats,
                                                                                                      save=False,if_scaler=False)

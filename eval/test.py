@@ -37,7 +37,7 @@ parser.add_argument('-mode', type=str, default='eval', help='train, debug or eva
 parser.add_argument('-data', type=str, default='2',
                     help='choose which ')
 parser.add_argument('-train', type=float, default=0.8, help='train data: 0.8,0.7,0.6,0.5')
-parser.add_argument('-test', type=str, default='40', help='choose which label to be test dataset')  ## 60 作为预测的类型
+parser.add_argument('-test', type=str, default='40,60', help='choose which label to be test dataset')  ## 60 作为预测的类型
 parser.add_argument('-scaler', type=str, default='zscore', help='data scaler process type, zscore or minmax') ## 归一化
 parser.add_argument('-snorm', type=int, default=1)  # STNorm Hyper Param
 parser.add_argument('-tnorm', type=int, default=1)  # STNorm Hyper Param
@@ -117,7 +117,7 @@ def predictModel(model, data_iter):
         YS_truth = np.vstack(YS_truth)
     return YS_truth, YS_pred  # [B,T,N,C]
 
-path = '../save/history/sensor4_gru_in1_out1_lr0.001_lossMSE_hc8_train0.8_test10_version10'
+path = '../save/40-60 test/sensor4_gru_in1_out1_lr0.001_lossMSE_hc8_train0.8_test40,60_version1'
 model = getModel(MODELNAME, device)
 # model = baseline_py_file.GRU(in_dim=TIMESTEP_IN, out_dim=TIMESTEP_OUT, hidden_layer=args.hc, device=device).to(device)
 model.eval()
@@ -125,7 +125,7 @@ model.load_state_dict(torch.load(path + '/' + 'gru' + '.pt',map_location=device)
 # map_location=torch.device('cpu')
 print(type(model))
 result = []
-data_path = '../data/test data/s4test40.csv'
+data_path = '../data/test data/s4test.csv'
 data_test = pd.read_csv(data_path,header=None,index_col=None)
 data = np.array(data_test)
 tor_data = torch.Tensor(data).unsqueeze(-1)

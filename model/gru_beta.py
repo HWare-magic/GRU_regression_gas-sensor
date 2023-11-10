@@ -45,8 +45,10 @@ class GRU(nn.Module):
         out = self.fc1(output.permute(0,2,1)) # torch.Size([32, 8, 1])
         # print('fc1 shape is ', out.shape)
         out = self.fc2(out.permute(0,2,1))  #torch.Size([32, 1, 1])
+
         self.bweight1.data = torch.clamp(self.bweight1.data, 1, 10)
         out = out - (self.bweight1 * x_r) #   here constant is a   hyperparameters      xr is beta       #new ver 10  old ver 5  sensor1 = 10  sensor2 =7.5  sensor3 = 2.2 sensor4 = 2.5
+
         # print('out is : ',out.shape)
         # out = torch.cat((out,x_r),1)
         # out = self.fc3(out.permute(0,2,1))
